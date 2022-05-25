@@ -10,6 +10,7 @@ import javax.persistence.ManyToOne;
 
 @Entity(name = "ORDERS")
 public class Order {
+
     @Id
     @GeneratedValue
     @Column(name = "order_id")

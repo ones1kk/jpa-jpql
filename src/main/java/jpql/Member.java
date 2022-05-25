@@ -6,12 +6,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 
 @Entity
 public class Member {
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue
     @Column(name = "member_id")
     private Long id;
     private String username;
@@ -25,13 +25,13 @@ public class Member {
         return team;
     }
 
+    public void setTeam(Team team) {
+        this.team = team;
+    }
+
     public void addTeam(Team team) {
         setTeam(team);
         team.getMembers().add(this);
-    }
-
-    public void setTeam(Team team) {
-        this.team = team;
     }
 
     public Long getId() {
