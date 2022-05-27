@@ -17,32 +17,23 @@ public class JpaMain {
         tx.begin();
 
         try {
-            Member member = new Member();
-            member.setUsername("member1");
-            member.setAge(10);
-            em.persist(member);
+
+            for (int i = 0; i < 100 ; i++) {
+                Member member = new Member();
+                member.setUsername("member" + i);
+                member.setAge(i);
+                em.persist(member);
+            }
+
 
             em.flush();
             em.clear();
 
-            List<Member> result1 = em.createQuery("select m from Member m", Member.class)
-                .getResultList();
+            List<Member> resultList = em.createQuery("select m from Member m order by m.age desc",
+                Member.class).setFirstResult(1).setMaxResults(10).getResultList();
 
-            Member findMember = result1.get(0);
-            findMember.setAge(20);
-
-            em.createQuery("select t from Member m join m.team t", Team.class)
-                .getResultList();
-
-            List<Object[]> resultList = em.createQuery("select m.username, m.age from Member m")
-                .getResultList();
-
-            Object[] result = resultList.get(0);
-            System.out.println("username = " + result[0]);
-            System.out.println("age = " + result[1]);
-
-            em.createQuery(
-                "select new jpql.MemberDto(m.username, m.age) from Member m", MemberDto.class);
+            System.out.println("resultList.size() = " + resultList.size());
+            resultList.forEach(System.out::println);
 
             tx.commit();
         } catch (Exception e) {
