@@ -5,6 +5,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+import javax.persistence.TypedQuery;
 
 public class JpaMain {
 
@@ -22,7 +23,7 @@ public class JpaMain {
             team.setName("team");
 
             Member member = new Member();
-            member.setUsername("team");
+            member.setUsername("관리자");
             member.setAge(10);
             member.setType(MemberType.ADMIN);
             member.setTeam(team);
@@ -33,19 +34,32 @@ public class JpaMain {
             em.flush();
             em.clear();
 
-            String query = "select m.username, 'HELLO', true, m.type from Member m"
-                + " where m.type = :memberType";
-            List<Object[]> result = em.createQuery(query)
-                .setParameter("memberType", MemberType.ADMIN).getResultList();
+            String query = "select " +
+                                "case when m.age <= 10 then '학생요금'" +
+                                "     when m.age >= 60 then '경로요금'" +
+                                "      else '일반요금'" +
+                                "end " +
+                            "from Member m";
 
-            for (Object[] objects : result) {
-                System.out.println("objects[0] = " + objects[0]);
-                System.out.println("objects[1] = " + objects[1]);
-                System.out.println("objects[2] = " + objects[2]);
-                System.out.println("objects[3] = " + objects[3]);
+            List<String> result = em.createQuery(query, String.class).getResultList();
+
+            for (String s : result) {
+                System.out.println("s = " + s);
             }
 
-//            em.createQuery("select i from Item i where type(i) = Book", Item.class).getResultList();
+            String query1 = "select coalesce(m.username, '이름 없는 회원') from Member m";
+            List<String> result1 = em.createQuery(query1, String.class).getResultList();
+
+            for (String s : result1) {
+                System.out.println("s = " + s);
+            }
+
+            String query2 = "select nullif(m.username, '관리자') from Member m";
+            List<String> result2 = em.createQuery(query2, String.class).getResultList();
+
+            for (String s : result2) {
+                System.out.println("s = " + s);
+            }
 
             tx.commit();
         } catch (Exception e) {
