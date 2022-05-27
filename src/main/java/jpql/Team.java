@@ -1,9 +1,12 @@
 package jpql;
 
+import static javax.persistence.FetchType.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
@@ -17,7 +20,7 @@ public class Team {
     private Long id;
     private String name;
 
-    @OneToMany(mappedBy = "team")
+    @OneToMany(mappedBy = "team", fetch = LAZY)
     private List<Member> members = new ArrayList<>();
 
     public List<Member> getMembers() {
@@ -36,11 +39,11 @@ public class Team {
         this.id = id;
     }
 
-    public String getTeamName() {
+    public String getName() {
         return name;
     }
 
-    public void setTeamName(String name) {
+    public void setName(String name) {
         this.name = name;
     }
 }
