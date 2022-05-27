@@ -17,30 +17,34 @@ public class JpaMain {
         tx.begin();
 
         try {
-
             Member member = new Member();
             member.setUsername("member1");
             member.setAge(10);
             em.persist(member);
 
-//            TypedQuery<Member> query1 = em.createQuery("select m from Member m", Member.class);
-//            TypedQuery<String> query2 = em.createQuery("select m.username from Member m", String.class);
-//
-//            Query query3 = em.createQuery("select m.username, m.age from Member m");
+            em.flush();
+            em.clear();
 
-            List<Member> result = em.createQuery("select m from Member m",
-                Member.class).getResultList();
+            List<Member> result1 = em.createQuery("select m from Member m", Member.class)
+                .getResultList();
 
-            result.forEach(it -> System.out.println("it.getUsername() : " + it.getUsername()));
+            Member findMember = result1.get(0);
+            findMember.setAge(20);
 
-            Member singleResult = em.createQuery(
-                    "select m from Member m where m.username= :username", Member.class)
-                .setParameter("username", "member1")
-                .getSingleResult();
+            em.createQuery("select t from Member m join m.team t", Team.class)
+                .getResultList();
 
-            System.out.println("singleResult.getUsername() = " + singleResult.getUsername());
+            List<Object[]> resultList = em.createQuery("select m.username, m.age from Member m")
+                .getResultList();
 
+            Object[] result = resultList.get(0);
+            System.out.println("username = " + result[0]);
+            System.out.println("age = " + result[1]);
 
+            em.createQuery(
+                "select new jpql.MemberDto(m.username, m.age) from Member m", MemberDto.class);
+
+            tx.commit();
         } catch (Exception e) {
             tx.rollback();
             e.printStackTrace();
