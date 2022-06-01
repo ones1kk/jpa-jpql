@@ -1,5 +1,6 @@
 package jpql;
 
+import java.util.Collection;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -46,12 +47,17 @@ public class JpaMain {
 //            String query = "select size(t.members) from Team t";
 
             //language=HQL
-            String query = "select group_concat(m.username) from Member m";
-            List<String> result = em.createQuery(query, String.class).getResultList();
 
-            for (String s : result) {
-                System.out.println("s = " + s);
-            }
+
+            // Implicit Join(묵시적 조인) --> 지양
+//             String query = "select t.members from Team t";
+//            Collection result = em.createQuery(query, Collection.class).getResultList();
+
+            // Explicit Join(암시적 조인)
+            String query = "select m from Team t join t.members m";
+            List<Member> result = em.createQuery(query, Member.class).getResultList();
+
+            System.out.println("result = " + result);
 
             tx.commit();
         } catch (Exception e) {
