@@ -51,7 +51,10 @@ public class JpaMain {
 //            String query = "select m From Member m";
             String query = "select m From Member m join fetch m.team";
 
-            List<Member> resultList = em.createQuery(query, Member.class).getResultList();
+            List<Member> resultList = em.createQuery(query, Member.class)
+                .setFirstResult(0)
+                .setMaxResults(10)
+                .getResultList();
 
             for (Member member : resultList) {
                 System.out.println(
@@ -67,15 +70,22 @@ public class JpaMain {
 
             // collections
             // query -> distinct
-            String query1 = "select t From Team t join fetch t.members";
-            List<Team> resultList1 = em.createQuery(query1, Team.class).getResultList();
+            // 패치 조인 대상에 별칭 사용 X
+            // 둘 이상의 컬렉션은 패치 조인 X
+            // 컬렉션을 패치 조인하면 페이징 API 사용 X
+            // join fetch t.members
+            String query1 = "select t From Team t";
+            List<Team> resultList1 = em.createQuery(query1, Team.class)
+                .setFirstResult(0)
+                .setMaxResults(2)
+                .getResultList();
 
             for (Team team : resultList1) {
                 System.out.println(
                     "team.getName() = " + team.getName() + " |members = " + team.getMembers()
                         .size());
                 for (Member member : team.getMembers()) {
-                    System.out.println(" - member = " + member);
+                    System.out.println(" -> member = " + member);
                 }
             }
 

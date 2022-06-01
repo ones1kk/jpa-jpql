@@ -1,5 +1,5 @@
 package jpql;
 
 public enum MemberType {
-    ADMIN,USER
+    ADMIN, USER
 }
