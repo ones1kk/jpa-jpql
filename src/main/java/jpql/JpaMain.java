@@ -89,6 +89,31 @@ public class JpaMain {
                 }
             }
 
+            // Entity 직접 사용
+//            String query2 = "select count(m.id) from Member m";
+            String query2 = "select count(m) from Member m";
+            Long singleResult = em.createQuery(query2, Long.class).getSingleResult();
+            System.out.println("singleResult = " + singleResult);
+
+            String query3 = "select m from Member m where m = :member";
+            Member findMember = em.createQuery(query3, Member.class).setParameter("member", member1)
+                .getSingleResult();
+
+            System.out.println("findMember = " + findMember);
+
+            // Fk
+            String query4 = "select m from Member m where m.team = :team";
+            List<Member> members = em.createQuery(query4, Member.class)
+                .setParameter("team", team1)
+                .getResultList();
+
+            System.out.println("members = " + members);
+
+            List<Member> findByUsername = em.createNamedQuery("Member.findByUsername", Member.class)
+                .setParameter("username", member2.getUsername()).getResultList();
+
+            System.out.println("findByUsername = " + findByUsername);
+
             tx.commit();
         } catch (Exception e) {
             tx.rollback();
