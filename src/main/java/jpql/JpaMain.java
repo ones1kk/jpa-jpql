@@ -32,21 +32,24 @@ public class JpaMain {
 
             Member member1 = new Member();
             member1.setUsername("member1");
+            member1.setAge(0);
             member1.setTeam(team1);
             em.persist(member1);
 
             Member member2 = new Member();
             member2.setUsername("member2");
+            member2.setAge(0);
             member2.setTeam(team1);
             em.persist(member2);
 
             Member member3 = new Member();
             member3.setUsername("member3");
             member3.setTeam(team2);
+            member3.setAge(0);
             em.persist(member3);
 
-            em.flush();
-            em.clear();
+//            em.flush();
+//            em.clear();
 
 //            String query = "select m From Member m";
             String query = "select m From Member m join fetch m.team";
@@ -113,6 +116,25 @@ public class JpaMain {
                 .setParameter("username", member2.getUsername()).getResultList();
 
             System.out.println("findByUsername = " + findByUsername);
+
+            // 1. 벌크 연산을 먼저 실행
+            // 2. 벌크 연산 수행 후 영속성 컨텍스트 초기화
+            // Flush 자동 호출
+                // commit, query, flush
+            int resultCount = em.createQuery("update Member m set m.age = 20").executeUpdate();
+            System.out.println("resultCount = " + resultCount);
+
+//            em.clear();
+
+            System.out.println("member1 = " + member1.getAge());
+            System.out.println("member2 = " + member2.getAge());
+            System.out.println("member3 = " + member3.getAge());
+
+            List<Member> resultList2 = em.createQuery("select m from Member m", Member.class)
+                .getResultList();
+            for (Member member : resultList2) {
+                System.out.println("member.getAge() = " + member.getAge());
+            }
 
             tx.commit();
         } catch (Exception e) {
